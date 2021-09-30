@@ -12,7 +12,7 @@ using Microsoft.Extensions.Hosting;
 using Microsoft.Extensions.Logging;
 using Microsoft.OpenApi.Models;
 
-namespace RestWithASP_NET5Udemy
+namespace DefaultAPI
 {
     public class Startup
     {
@@ -30,7 +30,7 @@ namespace RestWithASP_NET5Udemy
             services.AddControllers();
             services.AddSwaggerGen(c =>
             {
-                c.SwaggerDoc("v1", new OpenApiInfo { Title = "RestWithASP_NET5Udemy", Version = "v1" });
+                c.SwaggerDoc("v1", new OpenApiInfo { Title = "DefaultAPI", Version = "v1" });
             });
         }
 
@@ -41,7 +41,7 @@ namespace RestWithASP_NET5Udemy
             {
                 app.UseDeveloperExceptionPage();
                 app.UseSwagger();
-                app.UseSwaggerUI(c => c.SwaggerEndpoint("/swagger/v1/swagger.json", "RestWithASP_NET5Udemy v1"));
+                app.UseSwaggerUI(c => c.SwaggerEndpoint("/swagger/v1/swagger.json", "DefaultAPI v1"));
             }
 
             app.UseHttpsRedirection();
