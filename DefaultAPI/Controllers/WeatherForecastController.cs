@@ -5,7 +5,7 @@ using System.Threading.Tasks;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.Extensions.Logging;
 
-namespace RestWithASP_NET5Udemy.Controllers
+namespace DefaultAPI.Controllers
 {
     [ApiController]
     [Route("[controller]")]
