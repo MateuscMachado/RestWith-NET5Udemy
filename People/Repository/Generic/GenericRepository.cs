@@ -1,57 +1,57 @@
 using System;
 using System.Collections.Generic;
 using System.Linq;
-using People.Models;
+using Microsoft.EntityFrameworkCore;
+using People.Models.Base;
 using People.Models.Context;
 
-namespace People.Services.Implementations
+namespace People.Repository.Generic
 {
-    public class PersonServiceImplementation : IPersonService
+    public class GenericRepository<T> : IRepository<T> where T : BaseEntity
     {
         private readonly MySQLContext _context;
-        public PersonServiceImplementation(MySQLContext context)
+        private DbSet<T> dataSet;
+        public GenericRepository(MySQLContext context)
         {
             _context = context;
+            dataSet = _context.Set<T>();
         }
 
-        public List<Person> FindAll()
+        public List<T> FindAll()
         {
-            return _context.Persons.ToList();
+            return dataSet.ToList();
         }
 
-        public Person FindById(long id)
+        public T FindById(long id)
         {
-            return _context.Persons.SingleOrDefault(p => p.Id.Equals(id));
+            return dataSet.SingleOrDefault(i => i.Id.Equals(id));
         }
 
-        public Person Create(Person person)
+        public T Create(T item)
         {
             try
             {
-                _context.Add(person);
+                dataSet.Add(item);
                 _context.SaveChanges();
+                return item;
             }
             catch (Exception ex)
             {
 
                 throw ex;
             }
-            return person;
         }
 
-
-        public Person Update(Person person)
+        public T Update(T item)
         {
-            if (!Exists(person.Id)) return new Person();
-
-            var result = _context.Persons.SingleOrDefault(p => p.Id.Equals(person.Id));
-
+            var result = dataSet.SingleOrDefault(p => p.Id.Equals(item.Id));
             if (result != null)
             {
                 try
                 {
-                    _context.Entry(result).CurrentValues.SetValues(person);
+                    _context.Entry(result).CurrentValues.SetValues(item);
                     _context.SaveChanges();
+                    return result;
                 }
                 catch (Exception ex)
                 {
@@ -59,17 +59,20 @@ namespace People.Services.Implementations
                     throw ex;
                 }
             }
-            return person;
+            else
+            {
+                return null;
+            }
         }
 
         public void Delete(long id)
         {
-            var result = _context.Persons.SingleOrDefault(p => p.Id.Equals(id));
+            var result = dataSet.SingleOrDefault(p => p.Id.Equals(id));
             if (result != null)
             {
                 try
                 {
-                    _context.Persons.Remove(result);
+                    dataSet.Remove(result);
                     _context.SaveChanges();
                 }
                 catch (Exception ex)
@@ -80,7 +83,7 @@ namespace People.Services.Implementations
             }
         }
 
-        private bool Exists(long id)
+        public bool Exists(long id)
         {
             return _context.Persons.Any(p => p.Id.Equals(id));
         }
