@@ -9,42 +9,42 @@ namespace People.Repository.Generic
 {
     public class GenericRepository<T> : IRepository<T> where T : BaseEntity
     {
-        private readonly MySQLContext _context;
-        private DbSet<T> dataSet;
+        protected MySQLContext _context;
+
+        private DbSet<T> dataset;
         public GenericRepository(MySQLContext context)
         {
             _context = context;
-            dataSet = _context.Set<T>();
+            dataset = _context.Set<T>();
         }
 
         public List<T> FindAll()
         {
-            return dataSet.ToList();
+            return dataset.ToList();
         }
 
-        public T FindById(long id)
+        public T FindByID(long id)
         {
-            return dataSet.SingleOrDefault(i => i.Id.Equals(id));
+            return dataset.SingleOrDefault(p => p.Id.Equals(id));
         }
 
         public T Create(T item)
         {
             try
             {
-                dataSet.Add(item);
+                dataset.Add(item);
                 _context.SaveChanges();
                 return item;
             }
-            catch (Exception ex)
+            catch (Exception)
             {
-
-                throw ex;
+                throw;
             }
         }
 
         public T Update(T item)
         {
-            var result = dataSet.SingleOrDefault(p => p.Id.Equals(item.Id));
+            var result = dataset.SingleOrDefault(p => p.Id.Equals(item.Id));
             if (result != null)
             {
                 try
@@ -53,10 +53,9 @@ namespace People.Repository.Generic
                     _context.SaveChanges();
                     return result;
                 }
-                catch (Exception ex)
+                catch (Exception)
                 {
-
-                    throw ex;
+                    throw;
                 }
             }
             else
@@ -67,25 +66,44 @@ namespace People.Repository.Generic
 
         public void Delete(long id)
         {
-            var result = dataSet.SingleOrDefault(p => p.Id.Equals(id));
+            var result = dataset.SingleOrDefault(p => p.Id.Equals(id));
             if (result != null)
             {
                 try
                 {
-                    dataSet.Remove(result);
+                    dataset.Remove(result);
                     _context.SaveChanges();
                 }
-                catch (Exception ex)
+                catch (Exception)
                 {
-
-                    throw ex;
+                    throw;
                 }
             }
         }
 
         public bool Exists(long id)
         {
-            return _context.Persons.Any(p => p.Id.Equals(id));
+            return dataset.Any(p => p.Id.Equals(id));
+        }
+
+        public List<T> FindWithPagedSearch(string query)
+        {
+            return dataset.FromSqlRaw<T>(query).ToList();
+        }
+
+        public int GetCount(string query)
+        {
+            var result = "";
+            using (var connection = _context.Database.GetDbConnection())
+            {
+                connection.Open();
+                using (var command = connection.CreateCommand())
+                {
+                    command.CommandText = query;
+                    result = command.ExecuteScalar().ToString();
+                };
+            }
+            return int.Parse(result);
         }
     }
 }

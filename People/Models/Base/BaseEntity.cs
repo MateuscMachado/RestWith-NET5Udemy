@@ -4,7 +4,7 @@ namespace People.Models.Base
 {
     public class BaseEntity
     {
-        [Column]
+        [Column("id")]
         public long Id { get; set; }
     }
 }
