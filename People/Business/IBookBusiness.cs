@@ -4,11 +4,11 @@ using People.Models;
 
 namespace People.Business
 {
-    public interface IBookBusiness
+   public interface IBookBusiness
     {
-        List<BookVO> FindAll();
-        BookVO FindById(long id);
         BookVO Create(BookVO book);
+        BookVO FindByID(long id);
+        List<BookVO> FindAll();
         BookVO Update(BookVO book);
         void Delete(long id);
     }
