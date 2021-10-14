@@ -1,6 +1,6 @@
 using System;
 
-namespace DefaultAPI
+namespace RestWithASPNETUdemy
 {
     public class WeatherForecast
     {
